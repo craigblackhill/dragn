@@ -10,6 +10,15 @@ function setup() {
 	capture.size(1024, 768);
 }
 
+function mousePressed() {
+      
+    // Set the value of fullscreen
+    // into the variable
+    let fs = fullscreen();
+      
+    // Call to fullscreen function
+    fullscreen(!fs); 
+}
 
 function draw() {
 	let mainColor = '#2C3A47';
