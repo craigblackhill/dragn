@@ -1,35 +1,51 @@
+"use strict";
+let capture;
+
 function setup() {
-  createCanvas(400, 300);
-  img = createCapture(VIDEO);
-	img.hide();
-  img.size(800, 600);
+	createCanvas(windowWidth, windowHeight);
 
+	//set up a capture of the webcam
+	capture = createCapture(VIDEO);
+	capture.hide();
+	capture.size(1024, 768);
 }
+
+
 function draw() {
+	let mainColor = '#2C3A47';
+	let bgColor = '#CAD3C8';
+
+	background(bgColor);
+	noStroke();
+	fill(mainColor);
+
+	if (capture.width > 0) { //i.e. if the capture is ready and has data
+		drawWebcamImageAsDots();
+	}
+}
+
+
+function drawWebcamImageAsDots() {
+	let img = capture.get(0, 0, capture.width, capture.height);
 	img.loadPixels();
-  for (var y=img.height ; y>0; y-=10)
-  {
-    for (var x=img.width; x>0; x-=10)
-    {
-      var p = img.pixels[(y*img.width-x)*4];
-      if (p < 255 & p > 200 )
-      {
-        fill(p*2,p,p*3);
 
-		 ellipse(x, y, 11, 11);
-      }
-           if (p < 200 & p > 100 )
-      {
-        fill(22,p,p);
-       ellipse(x, y, 22, 22);
+	const step = 15;
+	for (var y = step; y < img.height; y += step) {
+		for (var x = step; x < img.width; x += step) {
+			const darkness = getPixelDarknessAtPosition(img, x, y);
+			const radius = 20 * darkness;
+	
+			let destX = x * width / img.width;
+			let destY = y * height / img.height;
+			
+			circle(destX, destY, radius);
+		}
+	}
+}
 
-      }
-			          if (p < 100 & p > 0 )
-      {
-        fill(220,p,222);
-       ellipse(x, y, 6, 6);
-
-      }
-    }
-  }
+//ignore this, initially
+function getPixelDarknessAtPosition(img, x, y) {
+	const mirroring = true;
+	var i = y * img.width + (mirroring ? (img.width - x - 1) : x);
+	return (255 - img.pixels[i * 4]) / 255;
 }
